@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --project testapp",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
@@ -34,6 +34,7 @@
     "@angular-eslint/template-parser": "13.2.1",
     "@angular/cli": "~13.3.1",
     "@angular/compiler-cli": "~13.3.0",
+    "@ngxs/devtools-plugin": "^3.7.3",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "5.17.0",
