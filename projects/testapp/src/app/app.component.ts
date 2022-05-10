@@ -9,11 +9,7 @@ import { MessagePortService } from 'ngxs-message-plugin';
 export class AppComponent {
   title = 'testapp';
 
-  constructor(private readonly msgService: MessagePortService) {
-    setInterval(() => {
-      console.log([...this.msgService.eventSources]);
-    }, 1000);
-  }
+  constructor(private readonly msgService: MessagePortService) {}
 
   @HostListener('window:beforeunload') beforeUnload() {
     for (const source of this.msgService.eventSources) {
