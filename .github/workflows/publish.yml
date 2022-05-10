@@ -1,0 +1,83 @@
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
+
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: cp README.md projects/ngxs-message-plugin/README.md
+      - run: npm version ${{ github.ref_name }}
+        working-directory: projects/ngxs-message-plugin
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test:ci
+      - run: npm run build
+      - run: npm pack dist/ngxs-message-plugin/
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: coverage/ngxs-message-plugin
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: package
+          path: ngxs-message-plugin-*.tgz
+
+  publish-gh-pages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build
+      - run: npm run build -- --project testapp --base-href /ngxs-message-plugin/
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist/testapp
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - uses: actions/download-artifact@v3
+        with:
+          name: package
+      - run: npm publish ngxs-message-plugin-*.tgz
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+
+  publish-github:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: package
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ngxs-message-plugin-*.tgz
