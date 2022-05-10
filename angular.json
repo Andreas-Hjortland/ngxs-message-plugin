@@ -3,5 +3,49 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "ngxs-message-plugin": {
+      "projectType": "library",
+      "root": "projects/ngxs-message-plugin",
+      "sourceRoot": "projects/ngxs-message-plugin/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ngxs-message-plugin/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngxs-message-plugin/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngxs-message-plugin/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ngxs-message-plugin/src/test.ts",
+            "tsConfig": "projects/ngxs-message-plugin/tsconfig.spec.json",
+            "karmaConfig": "projects/ngxs-message-plugin/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/ngxs-message-plugin/**/*.ts",
+              "projects/ngxs-message-plugin/**/*.html"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "ngxs-message-plugin",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
   }
 }
