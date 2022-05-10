@@ -48,7 +48,7 @@ export class MessagePortService
   }
 
   constructor() {
-    window.addEventListener('beforeunload', () => this.ngOnDestroy());
+    window.addEventListener('unload', () => this.ngOnDestroy(false));
   }
 
   /**
@@ -96,11 +96,13 @@ export class MessagePortService
     }
   };
 
-  ngOnDestroy(): void {
+  ngOnDestroy(clearPorts = true): void {
     for (const port of this.ports.keys()) {
       this.removePort(port, false);
     }
-    this.ports.clear();
+    if (clearPorts) {
+      this.ports.clear();
+    }
     this.$messages.complete();
   }
 

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { PopupComponent } from './popup.component';
+import { ChildComponent } from './child.component';
 import { NgxsModule } from '@ngxs/store';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { CounterState } from '../counter/counter.state';
@@ -9,7 +9,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { environment } from '../../environments/environment';
 
 @NgModule({
-  declarations: [PopupComponent],
+  declarations: [ChildComponent],
   imports: [
     BrowserModule,
     CounterModule,
@@ -19,6 +19,6 @@ import { environment } from '../../environments/environment';
     NgxsMessagePluginModule.forChild(),
     NgxsReduxDevtoolsPluginModule.forRoot(),
   ],
-  bootstrap: [PopupComponent],
+  bootstrap: [ChildComponent],
 })
 export class PopupModule {}

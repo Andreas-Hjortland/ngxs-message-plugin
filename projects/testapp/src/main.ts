@@ -13,8 +13,8 @@ function startsWith(prefix: string) {
   return location.href.startsWith(base + prefix);
 }
 
-if (startsWith('popup')) {
-  import('./app/popup/popup.module')
+if (startsWith('popup') || startsWith('iframe')) {
+  import('./app/child/child.module')
     .then(({ PopupModule }) =>
       platformBrowserDynamic().bootstrapModule(PopupModule)
     )
