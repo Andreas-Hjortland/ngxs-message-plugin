@@ -14,6 +14,7 @@ MIT
 MIT
 
 ngxs-message-plugin
+MIT
 
 rxjs
 Apache-2.0
