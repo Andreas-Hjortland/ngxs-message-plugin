@@ -9,9 +9,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:ci": "ng test --watch=false --code-coverage --source-map true --browsers ChromeHeadlessCI",
-    "lint": "ng lint",
-    "predeploy": "npm run ng build",
-    "deploy": "ng deploy --base-href=/ngxs-message-plugin/"
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
@@ -42,7 +40,6 @@
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "5.17.0",
     "@typescript-eslint/parser": "5.17.0",
-    "angular-cli-ghpages": "^1.0.0",
     "eslint": "^8.12.0",
     "jasmine-core": "~4.0.0",
     "karma": "~6.3.0",
