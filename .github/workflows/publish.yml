@@ -47,6 +47,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run build -- --project testapp --base-href /ngxs-message-plugin/
+      - run: cp dist/testapp/index.html dist/testapp/404.html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
