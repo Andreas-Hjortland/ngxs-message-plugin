@@ -6,7 +6,7 @@ This allows you to use the same state in an iframe or popup window, and dispatch
 the state host and update every app that subscribes to the state. For instance this makes it easier to manage state
 if you can detach elements from your app to a separate window.
 
-Check out the sample app at https://stackblitz.com/github/andreas-hjortland/ngxs-message-plugin (or check out the source code in [projects/testapp](projects/testapp))
+Check out the sample app at https://andreas-hjortland.github.io/ngxs-message-plugin/ (or check out the source code in [projects/testapp](projects/testapp))
 
 ## Installation and usage
 

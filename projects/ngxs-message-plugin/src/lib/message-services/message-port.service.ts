@@ -85,10 +85,12 @@ export class MessagePortService
 
   private handleMessage = (evt: MessageEvent): void => {
     if (evt.data === TEARDOWN_MESSAGE) {
-      const port = evt.source as MessagePort;
-      this.ports.delete(port);
-      port.removeEventListener('message', this.handleMessage);
-      port.close();
+      const port = (evt.source ?? evt.target) as MessagePort;
+      if (port) {
+        this.ports.delete(port);
+        port.removeEventListener('message', this.handleMessage);
+        port.close();
+      }
     } else if (isMessageType(evt)) {
       this.$messages.next(evt.data);
     }
