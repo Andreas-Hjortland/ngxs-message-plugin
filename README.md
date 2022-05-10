@@ -67,6 +67,14 @@ the most important options are `messageHandler` which lets you configure how the
 The default is `port` which will register any popup window or frame that is opened on the same domain with the opener
 state. You can also roll your own by providing an implementation of `MessageCommunicationService`.
 
+## Test app
+
+The test app is a simple demo app which highlights how to use the library and demos that both the state and actions are
+transparently handled. Here you can also see that we are using the `KNOWN_ACTION` injection token to help the host
+deserialize the actions since we are using `instanceof` in the [`counter.component.ts`](projects/testapp/src/app/counter/counter.component.ts)
+
+To start the test app, just check out the project, install dependencies using `npm install` and start it using `npm run`
+
 ## Known issues, limitations and potential improvements
 
 - If you are auto generating the action type names, you have to ensure that the action type name is the same on both the
