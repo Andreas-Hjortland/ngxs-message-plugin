@@ -1,6 +1,6 @@
 {
   "name": "ngxs-message-plugin",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "A NGXS plugin which allows you to share state between different browser contexts",
   "keywords": ["ngxs", "message", "iframe", "worker", "popup"],
   "homepage": "https://andreas-hjortland.github.io/ngxs-message-plugin/",
