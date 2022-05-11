@@ -18,7 +18,7 @@ export class Decrement {
 @Injectable()
 export class CounterState {
   @Action([Increment, Decrement])
-  public increment(
+  public change(
     ctx: StateContext<CounterModel>,
     action: Increment | Decrement
   ) {
