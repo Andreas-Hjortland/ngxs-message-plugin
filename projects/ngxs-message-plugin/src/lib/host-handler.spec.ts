@@ -96,6 +96,18 @@ describe('HostFeatures', () => {
         payload: store.snapshot()
       });
     });
+
+    it('should ignore multiple calls to init', () => {
+      hostHandler.init();
+      spyOn(commsService, 'postMessage');
+      messages.next({ type: GET_STORE });
+
+      expect(commsService.postMessage).toHaveBeenCalledOnceWith({
+        type: STORE_UPDATE,
+        actionType: undefined,
+        payload: store.snapshot()
+      });
+    });
   });
 
   describe('HostPlugin', () => {

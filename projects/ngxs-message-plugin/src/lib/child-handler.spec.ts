@@ -73,6 +73,18 @@ describe('ChildFeatures', () => {
       expect(commsService.postMessage).toHaveBeenCalledWith({ type: GET_STORE });
     });
 
+    it('should ignore subsequent calls to init', () => {
+      const store = TestBed.inject(Store);
+      spyOn(store, 'dispatch');
+      childHandler.init();
+      childHandler.init();
+      messages.next({
+        type: STORE_UPDATE,
+        payload: {},
+      });
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+    });
+
     it('should dispatch message events to the store', () => {
       childHandler.init();
       const store = TestBed.inject(Store);

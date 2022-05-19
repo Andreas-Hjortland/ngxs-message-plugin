@@ -7,7 +7,7 @@ import {
   GET_STORE,
   KNOWN_ACTIONS,
   MessageCommunicationService,
-  STORE_UPDATE,
+  STORE_UPDATE
 } from './symbols';
 
 @Injectable()
@@ -28,6 +28,10 @@ export class HostHandler implements OnDestroy {
   }
 
   public init = () => {
+    if(this.subscription) {
+      console.warn('HostHandler is already initiated, will re-initiate');
+      this.subscription.unsubscribe();
+    }
     this.subscription = this.commsService.messages$.subscribe((msg) => {
       switch (msg.type) {
         case ACTION_DISPATCHED:

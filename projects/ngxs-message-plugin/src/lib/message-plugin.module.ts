@@ -1,10 +1,9 @@
 import {
-  APP_INITIALIZER,
   ModuleWithProviders,
   NgModule,
   Optional,
   Provider,
-  Type,
+  Type
 } from '@angular/core';
 import { NGXS_PLUGINS } from '@ngxs/store';
 import { ChildHandler, ChildPlugin } from './child-handler';
@@ -13,14 +12,14 @@ import { BroadcastChannelService } from './message-services/broadcast-channel.se
 import {
   ChildMessagePortService,
   HostMessagePortService,
-  MessagePortService,
+  MessagePortService
 } from './message-services/message-port.service';
 import {
   ALLOWED_ORIGIN,
   BROADCAST_CHANNEL_NAME,
   Config,
   KNOWN_ACTIONS,
-  MessageCommunicationService,
+  MessageCommunicationService
 } from './symbols';
 
 function createModule(
@@ -42,12 +41,6 @@ function createModule(
 
   const providers: Provider[] = [
     Handler,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (handler: typeof Handler['prototype']) => handler.init,
-      deps: [Handler],
-      multi: true,
-    },
     {
       provide: NGXS_PLUGINS,
       useClass: Plugin,
