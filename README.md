@@ -1,5 +1,10 @@
 # NgxsMessagePlugin
 
+![Build status](https://github.com/Andreas-Hjortland/ngxs-message-plugin/workflows/Build/badge.svg?branch=master)
+[![npm](https://img.shields.io/npm/v/ngxs-message-plugin.svg)](https://www.npmjs.com/package/ngxs-message-plugin)
+[![npm](https://img.shields.io/npm/dm/ngxs-message-plugin.svg)](https://www.npmjs.com/package/ngxs-message-plugin)
+[![npm](https://img.shields.io/npm/l/ngxs-message-plugin.svg)](https://www.npmjs.com/package/ngxs-message-plugin)
+
 An Ngxs plugin that allows you to synchronize state across different browser contexts.
 
 This allows you to use the same state in an iframe or popup window, and dispatch actions which will transparently run on
