@@ -1,6 +1,6 @@
 # NgxsMessagePlugin
 
-![Build status](https://github.com/Andreas-Hjortland/ngxs-message-plugin/workflows/Build/badge.svg?branch=master)
+[![Build status](https://github.com/Andreas-Hjortland/ngxs-message-plugin/actions/workflows/build.yml/badge.svg)](https://github.com/Andreas-Hjortland/ngxs-message-plugin/actions/workflows/build.yml)
 [![npm](https://img.shields.io/npm/v/ngxs-message-plugin.svg)](https://www.npmjs.com/package/ngxs-message-plugin)
 [![npm](https://img.shields.io/npm/dm/ngxs-message-plugin.svg)](https://www.npmjs.com/package/ngxs-message-plugin)
 [![npm](https://img.shields.io/npm/l/ngxs-message-plugin.svg)](https://www.npmjs.com/package/ngxs-message-plugin)
