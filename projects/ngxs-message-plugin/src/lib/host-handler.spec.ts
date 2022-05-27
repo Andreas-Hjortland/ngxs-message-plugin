@@ -1,8 +1,13 @@
 import { TestBed } from "@angular/core/testing";
-import { Action, NgxsModule, NGXS_PLUGINS, State, StateContext, Store } from "@ngxs/store";
-import { Subject } from "rxjs";
-import { HostHandler, HostPlugin } from "./host-handler";
+import { Action, NgxsModule, State, StateContext, Store } from "@ngxs/store";
+import { Observable, Subject } from "rxjs";
+import { HostHandler } from "./host-handler";
 import { ACTION_DISPATCHED, GET_STORE, Message, MessageCommunicationService, STORE_UPDATE } from "./symbols";
+
+
+class Async {
+  static readonly type = '[Test] Async';
+}
 
 class Foo {
   static readonly type = '[Test] Foo';
@@ -26,6 +31,12 @@ export class TestState {
     ctx.setState({
       foo: action.foo
     });
+  }
+  
+  @Action(Async)
+  async(ctx: StateContext<TestStateModel>): Observable<void> {
+    ctx.setState({ foo: 'async task' });
+    return new Observable();
   }
 }
 
@@ -51,12 +62,6 @@ describe('HostFeatures', () => {
       ],
       providers: [
         HostHandler,
-        HostPlugin,
-        {
-          provide: NGXS_PLUGINS,
-          useClass: HostPlugin,
-          multi: true,
-        },
         {
           provide: MessageCommunicationService,
           useValue: commsService,
@@ -92,7 +97,6 @@ describe('HostFeatures', () => {
 
       expect(commsService.postMessage).toHaveBeenCalledOnceWith({
         type: STORE_UPDATE,
-        actionType: undefined,
         payload: store.snapshot()
       });
     });
@@ -104,38 +108,48 @@ describe('HostFeatures', () => {
 
       expect(commsService.postMessage).toHaveBeenCalledOnceWith({
         type: STORE_UPDATE,
-        actionType: undefined,
         payload: store.snapshot()
       });
     });
   });
 
-  describe('HostPlugin', () => {
-    it('should update clients after dispatch', done => {
-      spyOn(commsService, 'postMessage');
-      store.dispatch(new Foo('test')).subscribe(state => {
-        expect(commsService.postMessage).toHaveBeenCalledOnceWith({
-          type: STORE_UPDATE,
-          actionType: Foo.type,
-          payload: state
-        });
-        done();
+  it('should update clients after dispatch', done => {
+    spyOn(commsService, 'postMessage');
+    store.dispatch(new Foo('test')).subscribe(state => {
+      expect(commsService.postMessage).toHaveBeenCalledOnceWith({
+        type: STORE_UPDATE,
+        payload: state
       });
+      done();
     });
   });
 
+  it('should update clients before async operations complete', () => {
+      spyOn(commsService, 'postMessage');
+      store.dispatch(new Async());
+      expect(commsService.postMessage).toHaveBeenCalledOnceWith({
+          type: STORE_UPDATE,
+          payload: {
+            test: {
+              foo: 'async task'
+            }
+          }
+      });
+  });
+
+
   it('should update the store', () => {
     expect(store.snapshot().test.foo).toBe('');
-    const payload = {
-      test: {
-        foo: 'bar',
-      }
-    };
+    const payload = 'bar';
     messages.next({
       type: ACTION_DISPATCHED,
-      action: JSON.parse(JSON.stringify(new Foo('bar'))),
-      actionType: Foo.type
+      action: JSON.parse(JSON.stringify(new Foo(payload))),
+      actionType: Foo.type,
     });
-    expect(store.snapshot()).toEqual(payload);
+    expect(store.snapshot()).toEqual({
+      test: {
+        foo: payload,
+      }
+    });
   });
 });

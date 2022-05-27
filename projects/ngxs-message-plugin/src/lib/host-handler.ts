@@ -1,7 +1,7 @@
 import { Inject, Injectable, OnDestroy, Optional } from '@angular/core';
-import { NgxsNextPluginFn, NgxsPlugin, Store } from '@ngxs/store';
+import { Store } from '@ngxs/store';
 import { ActionDef } from '@ngxs/store/src/actions/symbols';
-import { Observable, Subscription, tap } from 'rxjs';
+import { Subscription } from 'rxjs';
 import {
   ACTION_DISPATCHED,
   GET_STORE,
@@ -12,7 +12,7 @@ import {
 
 @Injectable()
 export class HostHandler implements OnDestroy {
-  private subscription!: Subscription;
+  private subscriptions: Subscription[] = [];
   private knownActions: Map<string, ActionDef>;
 
   constructor(
@@ -28,11 +28,13 @@ export class HostHandler implements OnDestroy {
   }
 
   public init = () => {
-    if(this.subscription) {
+    if(this.subscriptions.length) {
       console.warn('HostHandler is already initiated, will re-initiate');
-      this.subscription.unsubscribe();
+      while (this.subscriptions.length) {
+        this.subscriptions.pop()?.unsubscribe();
+      }
     }
-    this.subscription = this.commsService.messages$.subscribe((msg) => {
+    this.subscriptions.push(this.commsService.messages$.subscribe((msg) => {
       switch (msg.type) {
         case ACTION_DISPATCHED:
           this.onActionDispatched(msg.actionType, msg.action);
@@ -41,13 +43,18 @@ export class HostHandler implements OnDestroy {
           this.onGetStore();
           break;
       }
-    });
+    }));
+    this.subscriptions.push(this.store.subscribe(nextState => {
+        this.commsService.postMessage({
+          type: STORE_UPDATE,
+          payload: nextState,
+        });
+    }));
   };
 
   private onGetStore(): void {
     this.commsService.postMessage({
       type: STORE_UPDATE,
-      actionType: undefined,
       payload: this.store.snapshot(),
     });
   }
@@ -70,23 +77,8 @@ export class HostHandler implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-}
-
-@Injectable()
-export class HostPlugin implements NgxsPlugin {
-  constructor(private commsService: MessageCommunicationService) {}
-
-  handle(state: any, action: any, next: NgxsNextPluginFn): Observable<void> {
-    return next(state, action).pipe(
-      tap((nextState) => {
-        this.commsService.postMessage({
-          type: STORE_UPDATE,
-          actionType: action.type ?? action.constructor?.type,
-          payload: nextState,
-        });
-      })
-    );
+    for (const subscription of this.subscriptions) {
+      subscription.unsubscribe();
+    }
   }
 }

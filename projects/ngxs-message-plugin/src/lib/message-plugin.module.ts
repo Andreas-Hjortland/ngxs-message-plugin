@@ -2,12 +2,11 @@ import {
   ModuleWithProviders,
   NgModule,
   Optional,
-  Provider,
-  Type
+  Provider
 } from '@angular/core';
 import { NGXS_PLUGINS } from '@ngxs/store';
 import { ChildHandler, ChildPlugin } from './child-handler';
-import { HostHandler, HostPlugin } from './host-handler';
+import { HostHandler } from './host-handler';
 import { BroadcastChannelService } from './message-services/broadcast-channel.service';
 import {
   ChildMessagePortService,
@@ -26,27 +25,16 @@ function createModule(
   isHost: boolean,
   config?: Config
 ): ModuleWithProviders<NgxsMessagePluginModule> {
-  let Handler: Type<HostHandler | ChildHandler>;
-  let Plugin: Type<HostPlugin | ChildPlugin>;
-  let PortService: Type<HostMessagePortService | ChildMessagePortService>;
+  const providers: Provider[] = [];
   if (isHost) {
-    Plugin = HostPlugin;
-    Handler = HostHandler;
-    PortService = HostMessagePortService;
+    providers.push(HostHandler);
   } else {
-    Plugin = ChildPlugin;
-    Handler = ChildHandler;
-    PortService = ChildMessagePortService;
-  }
-
-  const providers: Provider[] = [
-    Handler,
-    {
+    providers.push(ChildHandler, {
       provide: NGXS_PLUGINS,
-      useClass: Plugin,
+      useClass: ChildPlugin,
       multi: true,
-    },
-  ];
+    });
+  }
 
   if (config?.knownActions instanceof Array) {
     providers.push({
@@ -73,7 +61,7 @@ function createModule(
     providers.push(
       {
         provide: MessagePortService,
-        useClass: PortService,
+        useClass: isHost ? HostMessagePortService : ChildMessagePortService,
       },
       {
         provide: MessageCommunicationService,

@@ -5,14 +5,9 @@ import { ACTION_DISPATCHED, GET_STORE, MessageCommunicationService, STORE_UPDATE
 import { deepMerge } from './utils';
 
 class Message {
-    get type(): string {
-        const baseType = '@@MESSAGE';
-        if (this.parentType) {
-            return `${baseType}: ${this.parentType}`;
-        }
-        return baseType;
-    }
-    constructor(public payload: any, public parentType: string | undefined) { }
+    static readonly type = '@@MESSAGE' as const;
+
+    constructor(public payload: any) { }
 }
 
 /**
@@ -39,7 +34,7 @@ export class ChildHandler implements OnDestroy {
         }
         this.subscription = this.commsService.messages$.subscribe(msg => {
             if (msg.type === STORE_UPDATE) {
-                this.store.dispatch(new Message(msg.payload, msg.actionType));
+                this.store.dispatch(new Message(msg.payload));
             }
         });
         this.commsService.postMessage({ type: GET_STORE });

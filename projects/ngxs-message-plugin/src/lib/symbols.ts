@@ -14,7 +14,6 @@ export type Message =
   | {
       type: typeof STORE_UPDATE;
       payload: any;
-      actionType?: string;
     }
   | {
       type: typeof ACTION_DISPATCHED;
