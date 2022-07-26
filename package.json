@@ -6,6 +6,7 @@
     "prestart": "ng build --configuration development ngxs-message-plugin",
     "start": "ng serve testapp",
     "build": "ng build ngxs-message-plugin",
+    "build:app": "ng build testapp",
     "watch": "ng build --watch --configuration development ngxs-message-plugin",
     "test": "ng test ngxs-message-plugin",
     "test:ci": "ng test --watch=false --code-coverage --source-map true --browsers ChromeHeadlessCI ngxs-message-plugin",
