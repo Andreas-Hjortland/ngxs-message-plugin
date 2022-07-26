@@ -17,8 +17,8 @@
     "url": "https://github.com/Andreas-Hjortland/ngxs-message-plugin/"
   },
   "peerDependencies": {
-    "@angular/common": "^13.3.0",
-    "@angular/core": "^13.3.0",
+    "@angular/common": ">=10",
+    "@angular/core": ">=10",
     "@ngxs/store": "^3.7.3"
   },
   "dependencies": {
