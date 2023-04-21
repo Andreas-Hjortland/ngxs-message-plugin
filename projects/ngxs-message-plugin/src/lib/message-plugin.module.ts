@@ -2,7 +2,7 @@ import {
   ModuleWithProviders,
   NgModule,
   Optional,
-  Provider
+  Provider,
 } from '@angular/core';
 import { NGXS_PLUGINS } from '@ngxs/store';
 import { ChildHandler, ChildPlugin } from './child-handler';
@@ -11,14 +11,15 @@ import { BroadcastChannelService } from './message-services/broadcast-channel.se
 import {
   ChildMessagePortService,
   HostMessagePortService,
-  MessagePortService
+  MessagePortService,
 } from './message-services/message-port.service';
 import {
   ALLOWED_ORIGIN,
   BROADCAST_CHANNEL_NAME,
   Config,
   KNOWN_ACTIONS,
-  MessageCommunicationService
+  MessageCommunicationService,
+  STATE_FILTER,
 } from './symbols';
 
 function createModule(
@@ -28,6 +29,12 @@ function createModule(
   const providers: Provider[] = [];
   if (isHost) {
     providers.push(HostHandler);
+    if (config?.filter) {
+      providers.push({
+        provide: STATE_FILTER,
+        useValue: config.filter,
+      });
+    }
   } else {
     providers.push(ChildHandler, {
       provide: NGXS_PLUGINS,

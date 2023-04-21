@@ -24,6 +24,8 @@ export type Message =
       type: typeof GET_STORE;
     };
 
+export type Filter = RegExp | ((state: any) => any);
+
 export type Config = {
   /**
    * Which message handler to use. 'port' is default if no other is selected
@@ -33,11 +35,16 @@ export type Config = {
    *   a one-to-one relationship.
    * - `broadcast` will use a `BroadcastChannel` so that we synchronize state
    *   between all instances on the same origin if you use this, you must be
-   *   carefull to avoid having a multi master setup where we have two
+   *   careful to avoid having a multi master setup where we have two
    *   instances of the app running with `forRoot`. You can also provide your
    *   own provider if you want to handle communication yourself
    */
   messageHandler?: Provider | 'broadcast' | 'port';
+
+  /**
+   * State filter, if you want to avoid sending the whole state to the clients
+   */
+  filter?: Filter;
 
   /**
    * name of the broadcast channel if you use the `broadcast` message handler
@@ -58,6 +65,13 @@ export type Config = {
    */
   knownActions?: ActionDef[];
 };
+
+/**
+ * State filter, if you want to avoid sending the whole state to the clients
+ */
+export const STATE_FILTER = new InjectionToken<Filter>(
+  'STATE_FILTER'
+);
 
 /**
  * Channel name for the `BroadcastChannel` only applicable for the 'broadcast'
