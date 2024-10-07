@@ -1,9 +1,11 @@
 import { InjectionToken, Provider } from '@angular/core';
 import { ActionDef } from '@ngxs/store/src/actions/symbols';
 import { Observable } from 'rxjs';
+import { Diff } from './diff';
 
 export const GET_STORE = 'GET_STORE' as const;
 export const STORE_UPDATE = 'STORE_UPATE' as const;
+export const STORE_INIT = 'STORE_INIT' as const;
 export const ACTION_DISPATCHED = 'ACTION_DISPATCHED' as const;
 
 /**
@@ -12,17 +14,21 @@ export const ACTION_DISPATCHED = 'ACTION_DISPATCHED' as const;
  */
 export type Message =
   | {
-      type: typeof STORE_UPDATE;
-      payload: any;
-    }
+    type: typeof STORE_UPDATE;
+    payload: Diff[];
+  }
   | {
-      type: typeof ACTION_DISPATCHED;
-      actionType?: string;
-      action: any;
-    }
+    type: typeof STORE_INIT;
+    payload: any;
+  }
   | {
-      type: typeof GET_STORE;
-    };
+    type: typeof ACTION_DISPATCHED;
+    actionType?: string;
+    action: any;
+  }
+  | {
+    type: typeof GET_STORE;
+  };
 
 export type Filter = RegExp | ((state: any) => any);
 

@@ -1,7 +1,8 @@
 import { Inject, Injectable, OnDestroy, Optional } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { ActionDef } from '@ngxs/store/src/actions/symbols';
-import { Subscription } from 'rxjs';
+import { debounceTime, filter, from, map, Observable, Subscription } from 'rxjs';
+import { getDiff } from './diff'
 import {
   ACTION_DISPATCHED,
   Filter,
@@ -9,6 +10,7 @@ import {
   KNOWN_ACTIONS,
   MessageCommunicationService,
   STATE_FILTER,
+  STORE_INIT,
   STORE_UPDATE,
 } from './symbols';
 
@@ -64,11 +66,27 @@ export class HostHandler implements OnDestroy {
         }
       })
     );
+    let oldState: any = undefined;
+    const obs = new Observable((subscriber) => {
+      const storeSub = this.store.subscribe((nextState) => {
+        subscriber.next(nextState);
+      });
+      return () => storeSub.unsubscribe();
+    });
     this.subscriptions.push(
-      this.store.subscribe((nextState) => {
+      obs.pipe(
+        debounceTime(100),
+        map(nextState => this.filterState(nextState)),
+        map(nextState => {
+          const diff = Array.from(getDiff(oldState, nextState));
+          oldState = nextState;
+          return diff;
+        }),
+        filter(diff => diff.length > 0),
+      ).subscribe(diff => {
         this.commsService.postMessage({
           type: STORE_UPDATE,
-          payload: this.filterState(nextState),
+          payload: diff,
         });
       })
     );
@@ -76,7 +94,7 @@ export class HostHandler implements OnDestroy {
 
   private onGetStore(): void {
     this.commsService.postMessage({
-      type: STORE_UPDATE,
+      type: STORE_INIT,
       payload: this.filterState(this.store.snapshot()),
     });
   }
@@ -90,8 +108,8 @@ export class HostHandler implements OnDestroy {
       const constructedAction = actionConstructor
         ? Object.create(actionConstructor.prototype)
         : new (class MessageAction {
-            static readonly type = actionType;
-          })();
+          static readonly type = actionType;
+        })();
       this.store.dispatch(Object.assign(constructedAction, action));
     } else {
       this.store.dispatch(action);
