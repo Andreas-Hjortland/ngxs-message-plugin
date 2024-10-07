@@ -70,6 +70,11 @@ export type Config = {
    * dynamically. This is only applicable for the host config
    */
   knownActions?: ActionDef[];
+
+  /**
+   * Time for debounce to reduce load if we have a burst of actions
+   */
+  debounce?: number;
 };
 
 /**
@@ -109,4 +114,11 @@ export const ALLOWED_ORIGIN = new InjectionToken<string | string[]>(
  */
 export const KNOWN_ACTIONS = new InjectionToken<ActionDef[] | ActionDef>(
   'KNOWN_ACTION'
+);
+
+/**
+ * Time for debounce to reduce load if we have a burst of actions
+ */
+export const DEBOUNCE_TIME = new InjectionToken<ActionDef[] | ActionDef>(
+  'DEBOUNCE_TIME'
 );

@@ -1,34 +1,48 @@
-import { TestBed } from "@angular/core/testing";
-import { Action, NgxsModule, NGXS_PLUGINS, State, StateContext, Store } from "@ngxs/store";
-import { Subject } from "rxjs";
-import { ChildHandler, ChildPlugin } from "./child-handler";
-import { ACTION_DISPATCHED, GET_STORE, Message, MessageCommunicationService, STORE_UPDATE } from "./symbols";
+import { TestBed } from '@angular/core/testing';
+import {
+  Action,
+  NGXS_PLUGINS,
+  NgxsModule,
+  State,
+  StateContext,
+  Store,
+} from '@ngxs/store';
+import { Subject } from 'rxjs';
+import { ChildHandler, ChildPlugin } from './child-handler';
+import { Diff } from './diff';
+import {
+  ACTION_DISPATCHED,
+  GET_STORE,
+  Message,
+  MessageCommunicationService,
+  STORE_INIT,
+  STORE_UPDATE,
+} from './symbols';
 
 class Foo {
   static readonly type = '[Test] Foo';
 
-  constructor(public readonly foo: string) { }
+  constructor(public readonly foo: string) {}
 }
 
 type TestStateModel = {
   foo: string;
-}
+};
 
 @State<TestStateModel>({
   name: 'test',
   defaults: {
-    foo: ''
-  }
+    foo: '',
+  },
 })
 export class TestState {
   @Action(Foo)
   foo(ctx: StateContext<TestStateModel>, action: Foo): void {
     ctx.setState({
-      foo: action.foo
+      foo: action.foo,
     });
   }
 }
-
 
 describe('ChildFeatures', () => {
   let messages: Subject<Message>;
@@ -41,13 +55,11 @@ describe('ChildFeatures', () => {
       messages$: messages.asObservable(),
       postMessage(msg) {
         console.log('Posting', msg);
-      }
+      },
     };
 
     TestBed.configureTestingModule({
-      imports: [
-        NgxsModule.forRoot([TestState])
-      ],
+      imports: [NgxsModule.forRoot([TestState])],
       providers: [
         ChildHandler,
         ChildPlugin,
@@ -59,8 +71,8 @@ describe('ChildFeatures', () => {
         {
           provide: MessageCommunicationService,
           useValue: commsService,
-        }
-      ]
+        },
+      ],
     });
 
     childHandler = TestBed.inject(ChildHandler);
@@ -70,7 +82,9 @@ describe('ChildFeatures', () => {
     it('should request the full store after init', () => {
       spyOn(commsService, 'postMessage');
       childHandler.init();
-      expect(commsService.postMessage).toHaveBeenCalledWith({ type: GET_STORE });
+      expect(commsService.postMessage).toHaveBeenCalledWith({
+        type: GET_STORE,
+      });
     });
 
     it('should ignore subsequent calls to init', () => {
@@ -80,7 +94,7 @@ describe('ChildFeatures', () => {
       childHandler.init();
       messages.next({
         type: STORE_UPDATE,
-        payload: {},
+        payload: [],
       });
       expect(store.dispatch).toHaveBeenCalledTimes(1);
     });
@@ -88,15 +102,10 @@ describe('ChildFeatures', () => {
     it('should dispatch message events to the store', () => {
       childHandler.init();
       const store = TestBed.inject(Store);
-      const payload = {
-        test: {
-          foo: 'bar',
-        }
-      };
       spyOn(store, 'dispatch');
       messages.next({
-        type: STORE_UPDATE,
-        payload,
+        type: STORE_INIT,
+        payload: { test: { foo: '' } },
       });
       expect(store.dispatch).toHaveBeenCalled();
     });
@@ -118,7 +127,7 @@ describe('ChildFeatures', () => {
       expect(commsService.postMessage).toHaveBeenCalledWith({
         type: ACTION_DISPATCHED,
         action,
-        actionType: undefined
+        actionType: undefined,
       });
     });
   });
@@ -127,15 +136,27 @@ describe('ChildFeatures', () => {
     childHandler.init();
     const store = TestBed.inject(Store);
     expect(store.snapshot().test.foo).toBe('');
-    const payload = {
-      test: {
-        foo: 'bar',
-      }
-    };
+    const payload: Diff[] = [
+      {
+        operation: 'update',
+        value: {
+          foo: 'bar',
+        },
+        key: 'test',
+      },
+    ];
+    messages.next({
+      type: STORE_INIT,
+      payload: { test: { foo: '' } },
+    });
     messages.next({
       type: STORE_UPDATE,
       payload,
     });
-    expect(store.snapshot()).toEqual(payload);
+    expect(store.snapshot()).toEqual({
+      test: {
+        foo: 'bar',
+      },
+    });
   });
 });

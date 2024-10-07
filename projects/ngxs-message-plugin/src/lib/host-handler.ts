@@ -1,10 +1,11 @@
 import { Inject, Injectable, OnDestroy, Optional } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { ActionDef } from '@ngxs/store/src/actions/symbols';
-import { debounceTime, filter, from, map, Observable, Subscription } from 'rxjs';
-import { getDiff } from './diff'
+import { debounceTime, filter, map, Observable, Subscription, tap } from 'rxjs';
+import { getDiff } from './diff';
 import {
   ACTION_DISPATCHED,
+  DEBOUNCE_TIME,
   Filter,
   GET_STORE,
   KNOWN_ACTIONS,
@@ -22,11 +23,11 @@ export class HostHandler implements OnDestroy {
   constructor(
     private readonly store: Store,
     private readonly commsService: MessageCommunicationService,
-    @Inject(STATE_FILTER)
-    @Optional()
-    private readonly stateFilter: Filter | undefined,
-    @Inject(KNOWN_ACTIONS) @Optional() knownActions: ActionDef[]
+    @Inject(STATE_FILTER) @Optional() private readonly stateFilter: Filter | undefined,
+    @Inject(KNOWN_ACTIONS) @Optional() knownActions: ActionDef[],
+    @Inject(DEBOUNCE_TIME) @Optional() private readonly debounce: number | undefined,
   ) {
+    this.debounce ??= 100;
     this.knownActions = new Map(
       knownActions
         ?.flat()
@@ -75,7 +76,7 @@ export class HostHandler implements OnDestroy {
     });
     this.subscriptions.push(
       obs.pipe(
-        debounceTime(100),
+        this.debounce ? debounceTime(this.debounce) : tap(() => {}),
         map(nextState => this.filterState(nextState)),
         map(nextState => {
           const diff = Array.from(getDiff(oldState, nextState));

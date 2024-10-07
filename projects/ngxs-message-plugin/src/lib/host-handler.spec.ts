@@ -1,9 +1,16 @@
-import { TestBed } from "@angular/core/testing";
-import { Action, NgxsModule, State, StateContext, Store } from "@ngxs/store";
-import { Observable, Subject } from "rxjs";
-import { HostHandler } from "./host-handler";
-import { ACTION_DISPATCHED, GET_STORE, Message, MessageCommunicationService, STORE_UPDATE } from "./symbols";
-
+import { TestBed } from '@angular/core/testing';
+import { Action, NgxsModule, State, StateContext, Store } from '@ngxs/store';
+import { Observable, Subject } from 'rxjs';
+import { HostHandler } from './host-handler';
+import {
+  ACTION_DISPATCHED,
+  DEBOUNCE_TIME,
+  GET_STORE,
+  Message,
+  MessageCommunicationService,
+  STORE_INIT,
+  STORE_UPDATE,
+} from './symbols';
 
 class Async {
   static readonly type = '[Test] Async';
@@ -12,34 +19,33 @@ class Async {
 class Foo {
   static readonly type = '[Test] Foo';
 
-  constructor(public readonly foo: string) { }
+  constructor(public readonly foo: string) {}
 }
 
 type TestStateModel = {
   foo: string;
-}
+};
 
 @State<TestStateModel>({
   name: 'test',
   defaults: {
-    foo: ''
-  }
+    foo: '',
+  },
 })
 export class TestState {
   @Action(Foo)
   foo(ctx: StateContext<TestStateModel>, action: Foo): void {
     ctx.setState({
-      foo: action.foo
+      foo: action.foo,
     });
   }
-  
+
   @Action(Async)
   async(ctx: StateContext<TestStateModel>): Observable<void> {
     ctx.setState({ foo: 'async task' });
     return new Observable();
   }
 }
-
 
 describe('HostFeatures', () => {
   let messages: Subject<Message>;
@@ -53,20 +59,22 @@ describe('HostFeatures', () => {
       messages$: messages.asObservable(),
       postMessage(msg) {
         console.log('Posting', msg);
-      }
+      },
     };
 
     TestBed.configureTestingModule({
-      imports: [
-        NgxsModule.forRoot([TestState])
-      ],
+      imports: [NgxsModule.forRoot([TestState])],
       providers: [
         HostHandler,
         {
           provide: MessageCommunicationService,
           useValue: commsService,
-        }
-      ]
+        },
+        {
+          provide: DEBOUNCE_TIME,
+          useValue: 0,
+        },
+      ],
     });
 
     store = TestBed.inject(Store);
@@ -80,14 +88,16 @@ describe('HostFeatures', () => {
       const action = new Foo('bar');
       messages.next({
         type: ACTION_DISPATCHED,
-        action: JSON.parse(JSON.stringify({
-          type: Foo.type,
-          ...action
-        })),
+        action: JSON.parse(
+          JSON.stringify({
+            type: Foo.type,
+            ...action,
+          })
+        ),
       });
       expect(store.dispatch).toHaveBeenCalledWith({
         type: Foo.type,
-        ...action
+        ...action,
       });
     });
 
@@ -96,8 +106,8 @@ describe('HostFeatures', () => {
       messages.next({ type: GET_STORE });
 
       expect(commsService.postMessage).toHaveBeenCalledOnceWith({
-        type: STORE_UPDATE,
-        payload: store.snapshot()
+        type: STORE_INIT,
+        payload: store.snapshot(),
       });
     });
 
@@ -107,36 +117,41 @@ describe('HostFeatures', () => {
       messages.next({ type: GET_STORE });
 
       expect(commsService.postMessage).toHaveBeenCalledOnceWith({
-        type: STORE_UPDATE,
-        payload: store.snapshot()
+        type: STORE_INIT,
+        payload: store.snapshot(),
       });
     });
   });
 
-  it('should update clients after dispatch', done => {
+  it('should update clients after dispatch', (done) => {
     spyOn(commsService, 'postMessage');
-    store.dispatch(new Foo('test')).subscribe(state => {
+    store.dispatch(new Foo('test')).subscribe((state) => {
+      console.log('state', state);
+
       expect(commsService.postMessage).toHaveBeenCalledOnceWith({
         type: STORE_UPDATE,
-        payload: state
+        payload: [
+          {
+            key: 'test.foo',
+            operation: 'update',
+            value: 'test',
+          },
+        ],
       });
       done();
     });
   });
 
   it('should update clients before async operations complete', () => {
-      spyOn(commsService, 'postMessage');
-      store.dispatch(new Async());
-      expect(commsService.postMessage).toHaveBeenCalledOnceWith({
-          type: STORE_UPDATE,
-          payload: {
-            test: {
-              foo: 'async task'
-            }
-          }
-      });
+    spyOn(commsService, 'postMessage');
+    store.dispatch(new Async());
+    expect(commsService.postMessage).toHaveBeenCalledOnceWith({
+      type: STORE_UPDATE,
+      payload: [
+        { key: 'test.foo', operation: 'update', value: 'async task' },
+      ],
+    });
   });
-
 
   it('should update the store', () => {
     expect(store.snapshot().test.foo).toBe('');
@@ -149,7 +164,7 @@ describe('HostFeatures', () => {
     expect(store.snapshot()).toEqual({
       test: {
         foo: payload,
-      }
+      },
     });
   });
 });
