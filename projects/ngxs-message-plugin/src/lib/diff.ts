@@ -40,7 +40,7 @@ export function* getDiff(oldState: any, nextState: any, visited: WeakSet<any> = 
         for (let propKey in nextState) {
             const key = existingKey + propKey;
             if (!(propKey in oldState) && typeof nextState[propKey] !== 'undefined' && nextState[propKey] !== null) {
-                yield { key, operation: 'add', value: nextState[key] };
+                yield { key, operation: 'add', value: nextState[propKey] };
             }
         }
     }
@@ -52,7 +52,11 @@ export function applyDiff(oldState: any, diffs: Diff[]) {
         const parts = diff.key.split('.');
         let val = nextState;
         for(let part of parts.slice(0, -1)) {
-            val = val[part] = { ...val[part] };
+            if (Array.isArray(val[part])) {
+                val = [...val[part]];
+            } else {
+                val = val[part] = { ...val[part] };
+            }
         }
         let lastPart = parts.at(-1)!;
         switch (diff.operation) {
