@@ -4,7 +4,7 @@ export type Diff = {
     value?: any;
 };
 
-export function* getDiff(oldState: any, nextState: any, visited: WeakSet<any> = new WeakSet(), existingKey: string = ''): Iterable<Diff> {
+export function* getDiff<T>(oldState: T, nextState: T, visited: WeakSet<any> = new WeakSet(), existingKey: string = ''): Iterable<Diff> {
     if (typeof oldState === 'object' && oldState) {
         if (visited.has(oldState)) {
             return;
@@ -46,14 +46,14 @@ export function* getDiff(oldState: any, nextState: any, visited: WeakSet<any> = 
     }
 }
 
-export function applyDiff(oldState: any, diffs: Diff[]) {
+export function applyDiff<T>(oldState: T, diffs: Diff[]): T {
     let nextState = { ...oldState };
     for (let diff of diffs) {
         const parts = diff.key.split('.');
-        let val = nextState;
+        let val: any = nextState;
         for(let part of parts.slice(0, -1)) {
             if (Array.isArray(val[part])) {
-                val = [...val[part]];
+                val = val[part] = [...val[part]];
             } else {
                 val = val[part] = { ...val[part] };
             }
