@@ -53,7 +53,7 @@ export function applyDiff(oldState: any, diffs: Diff[]) {
         let val = nextState;
         for(let part of parts.slice(0, -1)) {
             if (Array.isArray(val[part])) {
-                val = val[part];
+                val = [...val[part]];
             } else {
                 val = val[part] = { ...val[part] };
             }
@@ -67,7 +67,7 @@ export function applyDiff(oldState: any, diffs: Diff[]) {
             case 'remove':
                 delete val[lastPart];
                 break;
-        }   
+        }
     }
     return nextState;
 }
