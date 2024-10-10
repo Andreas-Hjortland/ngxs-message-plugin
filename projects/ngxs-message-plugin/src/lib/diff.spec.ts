@@ -7,7 +7,7 @@ type State = {
             qux: string;
         };
     };
-    foo: string;
+    foo?: string | null;
 }
 
 describe('DiffAlgorithm', () => {
@@ -121,6 +121,29 @@ describe('DiffAlgorithm', () => {
         expect(() => applyDiff(lastState, diff)).toThrow();
     });
 
+    it('should handle null values', () => {
+        nextState.foo = null;
+        const diff = Array.from(getDiff(lastState, nextState));
+        console.log('diff', diff);
+        const result = applyDiff(lastState, diff);
+        console.log('result', result);
+        expect(result).toEqual(nextState);
+    });
+
+    it('should create keys of null or undefined values', () => {
+        delete lastState.foo;
+        nextState.foo = undefined;
+        const diff = Array.from(getDiff(lastState, nextState));
+        const result = applyDiff(lastState, diff);
+        expect(result).toEqual(nextState);
+
+        nextState.foo = null;
+        const diff2 = Array.from(getDiff(lastState, nextState));
+        const result2 = applyDiff(lastState, diff2);
+        console.log('result', result);
+        expect(result2).toEqual(nextState);
+    });
+
     it('should handle different instance types', () => {
         class Foo {
             text: string;
@@ -147,11 +170,14 @@ describe('DiffAlgorithm', () => {
     });
 
     // TODO: Add special handling for builtin objects
-    it('should be able to clone internal objects', () => {
+    it('should be able to clone built-in objects', () => {
+        const symbol = Symbol('test');
+        const symbol2 = Symbol('test2');
         const prev = {
             foo: 'bar',
             date: new Date('2020-01-01'),
             regex: /test/,
+            symbol,
             //map: new Map([['test', 'removed']]),
             //set: new Set([1, 2, 3]),
         };
@@ -159,6 +185,7 @@ describe('DiffAlgorithm', () => {
             foo: 'bar',
             date: new Date('2024-01-01'),
             regex: /test/i,
+            symbol: symbol2,
             //map: new Map<string | number, string | number>([[1, 2], ['foo', 'bar']]),
             //set: new Set([2, 3, 4]),
         };

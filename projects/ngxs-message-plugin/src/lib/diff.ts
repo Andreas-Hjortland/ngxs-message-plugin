@@ -13,15 +13,15 @@ export type Diff = {
  * @param obj Object to clone
  * @returns Shallow clone of input object
  */
-export function clone<T>(obj: T): T {
+function clone<T>(obj: T): T {
     let newVal: T;
-    if(Array.isArray(obj)) {
+    if (Array.isArray(obj)) {
         newVal = [...obj] as T;
         const proto = Object.getPrototypeOf(obj);
-        if(proto !== Array.prototype) {
+        if (proto !== Array.prototype) {
             Object.setPrototypeOf(newVal, proto);
-            for(const key in obj) {
-                if(!/^\d+$/.test(key) && Object.hasOwn(obj, key)) {
+            for (const key in obj) {
+                if (!/^\d+$/.test(key) && Object.hasOwn(obj, key)) {
                     (newVal as any)[key] = obj[key];
                 }
             }
@@ -31,6 +31,17 @@ export function clone<T>(obj: T): T {
         Object.assign(newVal as {}, obj);
     }
     return newVal;
+}
+
+/**
+ * Check if two values are objects of different types or if they are different values
+ */
+function isDifferentValueType(prev: unknown, current: unknown): boolean {
+    if (typeof prev === 'object' && typeof(current) === 'object' && prev !== null && current !== null) {
+        return Object.getPrototypeOf(prev) !== Object.getPrototypeOf(current);
+    }
+
+    return prev !== current;
 }
 
 function* _getDiff<T>(prev: T, current: T, visited: WeakSet<any>, existingKey: string): Iterable<Diff> {
@@ -53,18 +64,16 @@ function* _getDiff<T>(prev: T, current: T, visited: WeakSet<any>, existingKey: s
                 continue;
             }
 
-            if (!(propKey in current) || typeof current[propKey] === 'undefined' || current[propKey] === null) {
+            if (!(propKey in current)) {
                 yield { key, operation: 'remove' };
-            } else if (typeof prev[propKey] !== typeof current[propKey]) {
+            } else if (isDifferentValueType(prev[propKey], current[propKey])) {
                 yield { key, operation: 'update', value: current[propKey] };
-            } else if (typeof prev[propKey] !== 'object' || typeof(current[propKey]) !== 'object' || Object.getPrototypeOf(prev[propKey]) !== Object.getPrototypeOf(current[propKey])) {
-                yield { key, operation: 'update', value: current[propKey] };
-            } else if(prev[propKey] instanceof Date) {
-                if((prev[propKey] as Date).getTime() !== (current[propKey] as unknown as Date).getTime()) {
+            } else if (prev[propKey] instanceof Date) {
+                if ((prev[propKey] as Date).getTime() !== (current[propKey] as unknown as Date).getTime()) {
                     yield { key, operation: 'update', value: current[propKey] };
                 }
-            } else if(prev[propKey] instanceof RegExp) {
-                if((prev[propKey] as RegExp).toString() !== (current[propKey] as unknown as RegExp).toString()) {
+            } else if (prev[propKey] instanceof RegExp) {
+                if ((prev[propKey] as RegExp).toString() !== (current[propKey] as unknown as RegExp).toString()) {
                     yield { key, operation: 'update', value: current[propKey] };
                 }
             } else {
@@ -74,7 +83,7 @@ function* _getDiff<T>(prev: T, current: T, visited: WeakSet<any>, existingKey: s
         }
         for (let propKey in current) {
             const key = existingKey + propKey;
-            if (!(propKey in prev) && typeof current[propKey] !== 'undefined' && current[propKey] !== null) {
+            if (!(propKey in prev)) {
                 yield { key, operation: 'add', value: current[propKey] };
             }
         }
@@ -104,8 +113,8 @@ export function applyDiff<T>(oldState: T, diffs: Iterable<Diff>): T {
     for (let diff of diffs) {
         const parts = diff.key.split('.');
         let val: any = nextState;
-        for(let part of parts.slice(0, -1)) {
-            if(typeof val[part] !== 'object' || val[part] === null) {
+        for (let part of parts.slice(0, -1)) {
+            if (typeof val[part] !== 'object' || val[part] === null) {
                 console.error('Invalid diff key', diff.key, 'does not exist in state', oldState, 'Navigated to', val);
                 throw new Error(`Invalid diff key ${diff.key} does not exist in state`);
             }
