@@ -1,9 +1,3 @@
----
-name: Pull request
-about: Submit an improvement to this project
-assignees: Andreas-Hjortland
----
-
 ## Describe your changes
 Please write a short description of the changes you have done
 
