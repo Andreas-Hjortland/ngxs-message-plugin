@@ -61,6 +61,7 @@ with another browser alltogether. To configure the module, do like this
         NgxsMessagePlugun.forRoot({
             messageHandler: 'broadcast',
             broadcastChannelName: 'myChannel', // this is what separates messages from different instances of the app
+            debounce: 100,
         });
     ]
 })
@@ -70,7 +71,9 @@ export class AppModule { }
 You can check out all the configuration options in [`symbols.ts`](projects/ngxs-message-plugin/src/lib/symbols.ts), but
 the most important options are `messageHandler` which lets you configure how the messages are passed between instances.
 The default is `port` which will register any popup window or frame that is opened on the same domain with the opener
-state. You can also roll your own by providing an implementation of `MessageCommunicationService`.
+state. You can also roll your own by providing an implementation of `MessageCommunicationService`. Another potentially
+useful configuration option is `debounce` which tells how long to debounce before we actually calculate the state
+diff and transfer it to the clients. Default is 100 milliseconds.
 
 ## Test app
 
@@ -88,12 +91,9 @@ To start the test app, just check out the project, install dependencies using `n
 - If you are relying on the `instanceof` operator in your reducers, you will have to register the action class with the
   `KNOWN_ACTION` injection token or through the `knownActions` configuration parameter on the host. This lets the plugin
   map actions from the clients so that we can re-apply the prototype after deserializing the objects
-- We are serializing and copying the whole state for each state change and are doing the diff on the client. We probably
-  could only send a diff from the host that we apply on the client. Feel free to create a pull request if you want to do
-  this =)
 - The state must be serializable and clonable using the structured clone algorithm. This is already best practice, but
   anything in the store not serializable will be ignored.
-- On the children, you should not add any other plugins that modify the state because that might or might not be caught
+- On the children, you should not add any other plugins that modify the state because that may or may not be caught
   by the message plugin and therefore lost. That is not a problem on the host.
 
 ## Contributions
