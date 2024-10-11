@@ -17,6 +17,7 @@ import {
   ALLOWED_ORIGIN,
   BROADCAST_CHANNEL_NAME,
   Config,
+  DEBOUNCE_TIME,
   KNOWN_ACTIONS,
   MessageCommunicationService,
   STATE_FILTER,
@@ -33,6 +34,12 @@ function createModule(
       providers.push({
         provide: STATE_FILTER,
         useValue: config.filter,
+      });
+    }
+    if (typeof config?.debounce === 'number' && config.debounce >= 0) {
+      providers.push({
+        provide: DEBOUNCE_TIME,
+        useValue: config.debounce,
       });
     }
   } else {
