@@ -81,7 +81,7 @@ The test app is a simple demo app which highlights how to use the library and de
 transparently handled. Here you can also see that we are using the `KNOWN_ACTION` injection token to help the host
 deserialize the actions since we are using `instanceof` in the [`counter.state.ts`](projects/testapp/src/app/counter/counter.state.ts)
 
-To start the test app, just check out the project, install dependencies using `npm install` and start it using `npm run`
+To start the test app, just check out the project, install dependencies using `npm install` and start it using `npm start`
 
 ## Known issues, limitations and potential improvements
 
