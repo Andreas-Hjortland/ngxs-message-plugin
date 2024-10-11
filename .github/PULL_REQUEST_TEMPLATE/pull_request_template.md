@@ -1,9 +1,7 @@
 ---
 name: Pull request
 about: Submit an improvement to this project
-title: ''
 assignees: Andreas-Hjortland
-
 ---
 
 ## Describe your changes
