@@ -1,10 +1,13 @@
 import { Component, HostListener } from '@angular/core';
 import { MessagePortService } from 'ngxs-message-plugin';
+import { CounterComponent } from './counter/counter.component';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
+    standalone: true,
+    imports: [CounterComponent],
 })
 export class AppComponent {
   title = 'testapp';
