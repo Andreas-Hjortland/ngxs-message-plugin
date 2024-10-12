@@ -1,8 +1,14 @@
 import {
+  ENVIRONMENT_INITIALIZER,
+  EnvironmentProviders,
+  inject,
+  Injector,
+  makeEnvironmentProviders,
   ModuleWithProviders,
   NgModule,
   Optional,
   Provider,
+  StaticProvider,
 } from '@angular/core';
 import { NGXS_PLUGINS } from '@ngxs/store';
 import { ChildHandler, ChildPlugin } from './child-handler';
@@ -23,10 +29,7 @@ import {
   STATE_FILTER,
 } from './symbols';
 
-function createModule(
-  isHost: boolean,
-  config?: Config
-): ModuleWithProviders<NgxsMessagePluginModule> {
+function getProviders(isHost: boolean, config?: Config): Provider[] {
   const providers: Provider[] = [];
   if (isHost) {
     providers.push(HostHandler);
@@ -43,7 +46,8 @@ function createModule(
       });
     }
   } else {
-    providers.push(ChildHandler, {
+    providers.push(ChildHandler);
+    providers.push({
       provide: NGXS_PLUGINS,
       useClass: ChildPlugin,
       multi: true,
@@ -94,12 +98,7 @@ function createModule(
       useExisting: config.messageHandler,
     });
   }
-
-  const result: ModuleWithProviders<NgxsMessagePluginModule> = {
-    ngModule: NgxsMessagePluginModule,
-    providers,
-  };
-  return result;
+  return providers;
 }
 
 @NgModule()
@@ -111,7 +110,10 @@ export class NgxsMessagePluginModule {
   static forChild(
     config?: Omit<Config, 'knownActions'>
   ): ModuleWithProviders<NgxsMessagePluginModule> {
-    return createModule(false, config);
+    return {
+      ngModule: NgxsMessagePluginModule,
+      providers: getProviders(false, config),
+    };
   }
 
   /**
@@ -121,13 +123,44 @@ export class NgxsMessagePluginModule {
   static forRoot(
     config?: Config
   ): ModuleWithProviders<NgxsMessagePluginModule> {
-    return createModule(true, config);
+    return {
+      ngModule: NgxsMessagePluginModule,
+      providers: getProviders(true, config),
+    };
   }
 
   constructor(
     @Optional() hostHandler?: HostHandler,
     @Optional() childHandler?: ChildHandler
   ) {
-    hostHandler?.init() ?? childHandler?.init();
+    hostHandler?.init();
+    childHandler?.init();
   }
+}
+
+/**
+ * Set up the plugin in angular standalone mode. Add in `provideStore` after root states and options (where other 
+ * plugins are added)
+ * 
+ * @param isHost `true` if this is the root instance, `false` if this is a child instance
+ * @param config Optional config for the storage plugin
+ * @returns Providers to enable this plugin
+ */
+export function withNgxsMessagePlugin(
+  isHost: boolean,
+  config?: Config
+): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    ...getProviders(isHost, config),
+    {
+      provide: ENVIRONMENT_INITIALIZER,
+      useValue: () => {
+        console.log('Initializing NgxsMessagePluginModule');
+        inject(HostHandler, { optional: true })?.init();
+        inject(ChildHandler, { optional: true })?.init();
+        console.log('Done initializing NgxsMessagePluginModule');
+      },
+      multi: true,
+    }
+  ]);
 }

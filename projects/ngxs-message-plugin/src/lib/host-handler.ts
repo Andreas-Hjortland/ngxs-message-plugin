@@ -49,6 +49,7 @@ export class HostHandler implements OnDestroy {
   }
 
   public init = () => {
+    console.log('HostHandler init()');
     if (this.subscriptions.length) {
       console.warn('HostHandler is already initiated, will re-initiate');
       while (this.subscriptions.length) {

@@ -1,4 +1,4 @@
-export { NgxsMessagePluginModule } from './lib/message-plugin.module';
+export { NgxsMessagePluginModule, withNgxsMessagePlugin } from './lib/message-plugin.module';
 export { MessagePortService } from './lib/message-services/message-port.service';
 export {
   ALLOWED_ORIGIN,
@@ -9,3 +9,4 @@ export {
 export { isMessageType } from './lib/utils';
 export { HostHandler } from './lib/host-handler';
 export { ChildHandler } from './lib/child-handler';
+

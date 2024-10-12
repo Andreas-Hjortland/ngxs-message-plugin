@@ -35,6 +35,7 @@ export class ChildHandler implements OnDestroy {
      * handshake message.
      */
     public init = () => {
+        console.log('ChildHandler init()');
         if (this.subscription) {
             console.warn('ChildHandler is already initiated, will re-initiate');
             this.subscription.unsubscribe();

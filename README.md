@@ -25,6 +25,8 @@ Then you need to include the module in your host and child apps.
 
 ### Host
 
+For modules you use the following syntax:
+
 ```ts
 @NgModule({
     imports: [
@@ -33,6 +35,26 @@ Then you need to include the module in your host and child apps.
 })
 export class AppModule { }
 ```
+
+For standalone components you do it like this:
+```ts
+bootstrapApplication(AppComponent, {
+  // ...
+  providers: [
+    // ...
+    provideStore(
+      [RootState1, RootState2, ...],
+      {
+        // ...
+        developmentMode: !environment.production // optional
+      },
+      withNgxsMessagePlugin(/*isHost:*/ true);
+    )
+  ]
+})
+```
+The `isHost` parameter on the plugin selects if we are the host component or a child component and should be true for
+the host instance and false for the children.
 
 ### Child (popup / iframe)
 
@@ -43,6 +65,24 @@ export class AppModule { }
     ]
 })
 export class AppModule { }
+```
+
+For standalone components you do it like this:
+```ts
+bootstrapApplication(AppComponent, {
+  // ...
+  providers: [
+    // ...
+    provideStore(
+      [RootState1, RootState2, ...],
+      {
+        // ...
+        developmentMode: !environment.production // optional
+      },
+      withNgxsMessagePlugin(/*isHost:*/ false);
+    )
+  ]
+})
 ```
 
 You can then do `window.open('path/to/child/entrypoint')` and see that the state is the same in both the child and the
@@ -66,6 +106,26 @@ with another browser alltogether. To configure the module, do like this
     ]
 })
 export class AppModule { }
+```
+
+If you are using standalone mode, you configure it like this
+
+```ts
+bootstrapApplication(AppComponent, {
+  // ...
+  providers: [
+    // ...
+    provideStore(
+      [ /* ... */ ],
+      { /* ... */ },
+      withNgxsMessagePlugin(true /* or false if client */, {
+        messageHandler: 'broadcast',
+        broadcastChannelName: 'myChannel', // this is what separates messages from different instances of the app
+        debounce: 100,
+      });
+    )
+  ]
+})
 ```
 
 You can check out all the configuration options in [`symbols.ts`](projects/ngxs-message-plugin/src/lib/symbols.ts), but

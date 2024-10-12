@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Diff } from './diff';
 
 export const GET_STORE = 'GET_STORE' as const;
-export const STORE_UPDATE = 'STORE_UPATE' as const;
+export const STORE_UPDATE = 'STORE_UPDATE' as const;
 export const STORE_INIT = 'STORE_INIT' as const;
 export const ACTION_DISPATCHED = 'ACTION_DISPATCHED' as const;
 
