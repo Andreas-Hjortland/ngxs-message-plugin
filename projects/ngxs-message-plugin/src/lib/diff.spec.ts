@@ -124,9 +124,7 @@ describe('DiffAlgorithm', () => {
     it('should handle null values', () => {
         nextState.foo = null;
         const diff = Array.from(getDiff(lastState, nextState));
-        console.log('diff', diff);
         const result = applyDiff(lastState, diff);
-        console.log('result', result);
         expect(result).toEqual(nextState);
     });
 
@@ -140,7 +138,6 @@ describe('DiffAlgorithm', () => {
         nextState.foo = null;
         const diff2 = Array.from(getDiff(lastState, nextState));
         const result2 = applyDiff(lastState, diff2);
-        console.log('result', result);
         expect(result2).toEqual(nextState);
     });
 
@@ -190,7 +187,6 @@ describe('DiffAlgorithm', () => {
             //set: new Set([2, 3, 4]),
         };
         const diff = Array.from(getDiff(prev, next));
-        console.log('diff', Array.from(diff));
         expect(applyDiff(prev, diff)).toEqual(next);
     });
   });

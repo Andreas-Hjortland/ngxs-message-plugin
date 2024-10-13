@@ -33,7 +33,6 @@ async function launch() {
           importProvidersFrom(
             ...commonModules,
             NgxsMessagePluginModule.forChild(),
-            
           ),
         ],
       });

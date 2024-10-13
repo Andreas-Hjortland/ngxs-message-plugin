@@ -126,7 +126,6 @@ describe('HostFeatures', () => {
   it('should update clients after dispatch', (done) => {
     spyOn(commsService, 'postMessage');
     store.dispatch(new Foo('test')).subscribe((state) => {
-      console.log('state', state);
 
       expect(commsService.postMessage).toHaveBeenCalledOnceWith({
         type: STORE_UPDATE,

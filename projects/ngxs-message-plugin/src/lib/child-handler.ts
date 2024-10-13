@@ -2,7 +2,6 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { InitState, NgxsNextPluginFn, NgxsPlugin, Store } from '@ngxs/store';
 import { EMPTY, Observable, Subscription } from 'rxjs';
 import { ACTION_DISPATCHED, GET_STORE, MessageCommunicationService, STORE_INIT, STORE_UPDATE } from './symbols';
-import { deepMerge } from './utils';
 import { applyDiff, Diff } from './diff';
 
 class Message {
@@ -18,7 +17,7 @@ class InitMessage {
 }
 
 /**
- * Subscribes to messages and dispatches events to the store to be caught by 
+ * Subscribes to messages and dispatches events to the store to be caught by
  * `ChildPlugin`
  */
 @Injectable()
@@ -35,7 +34,6 @@ export class ChildHandler implements OnDestroy {
      * handshake message.
      */
     public init = () => {
-        console.log('ChildHandler init()');
         if (this.subscription) {
             console.warn('ChildHandler is already initiated, will re-initiate');
             this.subscription.unsubscribe();
@@ -57,8 +55,8 @@ export class ChildHandler implements OnDestroy {
 
 /**
  * This takes every event and serializes them to be posted to the host state
- * When we get an Action of type `Message` we will do a deep merge with the 
- * current state and return that, otherwise we will swallow the action so that 
+ * When we get an Action of type `Message` we will do a deep merge with the
+ * current state and return that, otherwise we will swallow the action so that
  * the state is not modified.
  */
 @Injectable()

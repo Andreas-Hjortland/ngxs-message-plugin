@@ -139,9 +139,9 @@ export class NgxsMessagePluginModule {
 }
 
 /**
- * Set up the plugin in angular standalone mode. Add in `provideStore` after root states and options (where other 
+ * Set up the plugin in angular standalone mode. Add in `provideStore` after root states and options (where other
  * plugins are added)
- * 
+ *
  * @param isHost `true` if this is the root instance, `false` if this is a child instance
  * @param config Optional config for the storage plugin
  * @returns Providers to enable this plugin
@@ -155,10 +155,8 @@ export function withNgxsMessagePlugin(
     {
       provide: ENVIRONMENT_INITIALIZER,
       useValue: () => {
-        console.log('Initializing NgxsMessagePluginModule');
         inject(HostHandler, { optional: true })?.init();
         inject(ChildHandler, { optional: true })?.init();
-        console.log('Done initializing NgxsMessagePluginModule');
       },
       multi: true,
     }
