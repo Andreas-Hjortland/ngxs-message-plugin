@@ -47,12 +47,12 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm run build:app -- --base-href /ngxs-message-plugin/
-      - run: cp dist/testapp/index.html dist/testapp/404.html
+      - run: cp dist/testapp/browser/index.html dist/testapp/browser/404.html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/testapp
+          publish_dir: ./dist/testapp/browser
 
   publish-npm:
     needs: build
