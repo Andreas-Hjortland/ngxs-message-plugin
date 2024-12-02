@@ -14,7 +14,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 22
       - run: cp README.md projects/ngxs-message-plugin/README.md
       - run: npm version ${{ github.ref_name }}
         working-directory: projects/ngxs-message-plugin
@@ -60,7 +60,7 @@ jobs:
     steps:
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 22
           registry-url: https://registry.npmjs.org/
       - uses: actions/download-artifact@v3
         with:
