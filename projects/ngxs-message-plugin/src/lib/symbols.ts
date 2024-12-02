@@ -1,7 +1,7 @@
 import { InjectionToken, Provider } from '@angular/core';
-import { ActionDef } from '@ngxs/store/src/actions/symbols';
 import { Observable } from 'rxjs';
 import { Diff } from './diff';
+import { ActionDef } from '@ngxs/store';
 
 export const GET_STORE = 'GET_STORE' as const;
 export const STORE_UPDATE = 'STORE_UPDATE' as const;

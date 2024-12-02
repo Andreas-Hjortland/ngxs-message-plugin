@@ -1,12 +1,8 @@
-import { enableProdMode, importProvidersFrom } from '@angular/core';
-
+import { enableProdMode } from '@angular/core';
 import { environment } from './environments/environment';
-import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
-import { NgxsMessagePluginModule } from 'ngxs-message-plugin';
-import { CounterState } from './app/counter/counter.state';
-import { NgxsModule } from '@ngxs/store';
-import { CounterModule } from './app/counter/counter.module';
-import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
+import { withNgxsMessagePlugin } from 'ngxs-message-plugin';
+import { bootstrapApplication } from '@angular/platform-browser';
+import { appConfig } from './app/app.config';
 
 if (environment.production) {
   enableProdMode();
@@ -17,35 +13,25 @@ function startsWith(prefix: string) {
 }
 
 async function launch() {
-  const commonModules = [
-    BrowserModule,
-    CounterModule,
-    NgxsModule.forRoot([CounterState], {
-      developmentMode: !environment.production,
-    }),
-    NgxsReduxDevtoolsPluginModule.forRoot(),
-  ];
   try {
     if (startsWith('popup') || startsWith('iframe')) {
       const { ChildComponent } = await import('./app/child/child.component');
       await bootstrapApplication(ChildComponent, {
+        ...appConfig,
         providers: [
-          importProvidersFrom(
-            ...commonModules,
-            NgxsMessagePluginModule.forChild(),
-          ),
-        ],
+          ...appConfig.providers,
+          withNgxsMessagePlugin(false)
+        ]
       });
     } else {
       const { AppComponent } = await import('./app/app.component');
       await bootstrapApplication(AppComponent, {
+        ...appConfig,
         providers: [
-          importProvidersFrom(
-            ...commonModules,
-            NgxsMessagePluginModule.forRoot({
-              debounce: 0,
-            }),
-          ),
+          ...appConfig.providers,
+          withNgxsMessagePlugin(true, {
+            debounce: 0,
+          })
         ],
       });
     }

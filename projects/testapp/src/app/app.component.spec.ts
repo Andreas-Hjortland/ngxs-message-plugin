@@ -1,11 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [AppComponent],
-}).compileComponents();
+      imports: [AppComponent],
+      providers: [provideExperimentalZonelessChangeDetection()],
+    }).compileComponents();
   });
 
   it('should create the app', () => {
@@ -24,6 +26,8 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('.content span')?.textContent).toContain('testapp app is running!');
+    expect(compiled.querySelector('.content span')?.textContent).toContain(
+      'testapp app is running!'
+    );
   });
 });

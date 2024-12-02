@@ -55,12 +55,11 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/testapp",
             "index": "projects/testapp/src/index.html",
-            "main": "projects/testapp/src/main.ts",
-            "polyfills": "projects/testapp/src/polyfills.ts",
+            "browser": "projects/testapp/src/main.ts",
             "tsConfig": "projects/testapp/tsconfig.app.json",
             "assets": [
               "projects/testapp/src/favicon.ico",
@@ -94,9 +93,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
@@ -108,10 +105,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "testapp:build:production"
+              "buildTarget": "testapp:build:production"
             },
             "development": {
-              "browserTarget": "testapp:build:development"
+              "buildTarget": "testapp:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -119,14 +116,13 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "testapp:build"
+            "buildTarget": "testapp:build"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "projects/testapp/src/test.ts",
-            "polyfills": "projects/testapp/src/polyfills.ts",
             "tsConfig": "projects/testapp/tsconfig.spec.json",
             "karmaConfig": "projects/testapp/karma.conf.js",
             "assets": [

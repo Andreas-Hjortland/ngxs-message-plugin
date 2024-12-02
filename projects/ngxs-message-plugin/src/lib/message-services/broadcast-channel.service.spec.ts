@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { BROADCAST_CHANNEL_NAME } from '../symbols';
 import { BroadcastChannelService } from './broadcast-channel.service';
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 
 
 describe('BroadcastChannelService', () => {
@@ -9,6 +10,7 @@ describe('BroadcastChannelService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideExperimentalZonelessChangeDetection(),
         BroadcastChannelService,
         {
           provide: BROADCAST_CHANNEL_NAME,

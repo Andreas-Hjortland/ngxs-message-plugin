@@ -11,6 +11,7 @@ import {
   STORE_INIT,
   STORE_UPDATE,
 } from './symbols';
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 
 class Async {
   static readonly type = '[Test] Async';
@@ -65,6 +66,7 @@ describe('HostFeatures', () => {
     TestBed.configureTestingModule({
       imports: [NgxsModule.forRoot([TestState])],
       providers: [
+        provideExperimentalZonelessChangeDetection(),
         HostHandler,
         {
           provide: MessageCommunicationService,

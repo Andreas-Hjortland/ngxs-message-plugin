@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Action, State, StateContext } from '@ngxs/store';
+import { Action, Selector, State, StateContext } from '@ngxs/store';
 
 export type CounterModel = number;
 
@@ -17,6 +17,11 @@ export class Decrement {
 })
 @Injectable()
 export class CounterState {
+  @Selector()
+  static count(state: CounterModel) {
+    return state;
+  }
+  
   @Action([Increment, Decrement])
   public change(
     ctx: StateContext<CounterModel>,

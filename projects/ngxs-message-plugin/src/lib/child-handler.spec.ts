@@ -6,6 +6,7 @@ import {
   State,
   StateContext,
   Store,
+  withNgxsPlugin,
 } from '@ngxs/store';
 import { Subject } from 'rxjs';
 import { ChildHandler, ChildPlugin } from './child-handler';
@@ -18,6 +19,7 @@ import {
   STORE_INIT,
   STORE_UPDATE,
 } from './symbols';
+import { provideExperimentalZonelessChangeDetection } from '@angular/core';
 
 class Foo {
   static readonly type = '[Test] Foo';
@@ -61,13 +63,10 @@ describe('ChildFeatures', () => {
     TestBed.configureTestingModule({
       imports: [NgxsModule.forRoot([TestState])],
       providers: [
+        provideExperimentalZonelessChangeDetection(),
         ChildHandler,
         ChildPlugin,
-        {
-          provide: NGXS_PLUGINS,
-          useClass: ChildPlugin,
-          multi: true,
-        },
+        withNgxsPlugin(ChildPlugin),
         {
           provide: MessageCommunicationService,
           useValue: commsService,

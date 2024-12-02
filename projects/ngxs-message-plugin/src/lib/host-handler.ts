@@ -1,6 +1,5 @@
 import { Inject, Injectable, OnDestroy, Optional } from '@angular/core';
-import { Store } from '@ngxs/store';
-import { ActionDef } from '@ngxs/store/src/actions/symbols';
+import { ActionDef, Store } from '@ngxs/store';
 import { debounceTime, filter, map, Observable, Subscription, tap } from 'rxjs';
 import { getDiff } from './diff';
 import {
