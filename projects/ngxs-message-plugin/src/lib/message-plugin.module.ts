@@ -10,7 +10,6 @@ import {
   Provider,
   StaticProvider,
 } from '@angular/core';
-import { NGXS_PLUGINS } from '@ngxs/store';
 import { ChildHandler, ChildPlugin } from './child-handler';
 import { HostHandler } from './host-handler';
 import { BroadcastChannelService } from './message-services/broadcast-channel.service';
@@ -28,9 +27,13 @@ import {
   MessageCommunicationService,
   STATE_FILTER,
 } from './symbols';
+import { withNgxsPlugin } from '@ngxs/store';
 
-function getProviders(isHost: boolean, config?: Config): Provider[] {
-  const providers: Provider[] = [];
+function getProviders(
+  isHost: boolean,
+  config?: Config
+): (EnvironmentProviders | Provider)[] {
+  const providers: (EnvironmentProviders | Provider)[] = [];
   if (isHost) {
     providers.push(HostHandler);
     if (config?.filter) {
@@ -47,11 +50,7 @@ function getProviders(isHost: boolean, config?: Config): Provider[] {
     }
   } else {
     providers.push(ChildHandler);
-    providers.push({
-      provide: NGXS_PLUGINS,
-      useClass: ChildPlugin,
-      multi: true,
-    });
+    providers.push(withNgxsPlugin(ChildPlugin));
   }
 
   if (config?.knownActions instanceof Array) {
@@ -159,6 +158,6 @@ export function withNgxsMessagePlugin(
         inject(ChildHandler, { optional: true })?.init();
       },
       multi: true,
-    }
+    },
   ]);
 }
