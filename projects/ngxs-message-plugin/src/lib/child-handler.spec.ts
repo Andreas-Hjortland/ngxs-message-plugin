@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import {
   Action,
-  NGXS_PLUGINS,
   NgxsModule,
   State,
   StateContext,

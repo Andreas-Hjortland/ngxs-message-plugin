@@ -10,8 +10,7 @@
     "watch": "ng build --watch --configuration development ngxs-message-plugin",
     "test": "ng test ngxs-message-plugin",
     "test:ci": "ng test --watch=false --code-coverage --source-map true --browsers ChromeHeadlessCI ngxs-message-plugin",
-    "lint": "ng lint",
-    "serve:ssr:testapp2": "node dist/testapp2/server/server.mjs"
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
@@ -22,11 +21,8 @@
     "@angular/forms": "^18.2.13",
     "@angular/platform-browser": "^18.2.13",
     "@angular/platform-browser-dynamic": "^18.2.13",
-    "@angular/platform-server": "^18.2.13",
     "@angular/router": "^18.2.13",
-    "@angular/ssr": "^18.2.12",
     "@ngxs/store": "^18.1.6",
-    "express": "^4.18.2",
     "rxjs": "^7.5.7",
     "tslib": "^2.8.1"
   },
@@ -40,7 +36,6 @@
     "@angular/cli": "^18.2.12",
     "@angular/compiler-cli": "^18.2.13",
     "@ngxs/devtools-plugin": "^18.1.6",
-    "@types/express": "^4.17.17",
     "@types/jasmine": "^5.1.5",
     "@types/node": "^18.18.0",
     "@typescript-eslint/eslint-plugin": "^8.16.0",

@@ -1,12 +1,6 @@
-import { enableProdMode } from '@angular/core';
-import { environment } from './environments/environment';
 import { withNgxsMessagePlugin } from 'ngxs-message-plugin';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
-
-if (environment.production) {
-  enableProdMode();
-}
 
 function startsWith(prefix: string) {
   return location.href.startsWith(document.baseURI + prefix);
